@@ -67,7 +67,7 @@ namespace Interpreter
                 Punctuation = ";,".Select(x => x.ToString()).ToArray();
                 Space = "[\n\r\t ]+";
                 Functions = new[] { "scan", "print" };
-                Sintaxis = new[] { "for", "to", "if", "else" };
+                Sintaxis = new[] { "for", "to", "if", "else", "while" };
             }
 
             public static IEnumerable<string> GetAllRules()

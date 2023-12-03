@@ -46,6 +46,10 @@ namespace Interpreter
             {
                 For(context);
             }
+            else if (token == "while")
+            {
+                While(context);
+            }
             else if (token == "print")
             {
                 Print(context);
@@ -124,6 +128,50 @@ namespace Interpreter
             }
             else
                 throw new Exception("Invalid <print_end>.");
+        }
+
+        private void While(Context context)
+        {
+            ExpressionsHellper.CheckStack(context);
+            var stack = context.Tokens;
+            var boolExprCommands = new List<Token>();
+            var token = stack.Pop();
+            while (token.TokenString != "{")
+            {
+                boolExprCommands.Add(token);
+                token = stack.Pop();
+            }
+
+            int bracketCount = 1;
+            var commands = new List<Token>
+            {
+                token
+            };
+
+            while (stack.Count > 0 && bracketCount != 0)
+            {
+                token = stack.Pop();
+                commands.Add(token);
+                if (token.TokenString == "{")
+                    bracketCount++;
+                if (token.TokenString == "}")
+                    bracketCount--;
+            }
+            if (bracketCount > 0)
+                throw new Exception("Expected '}'");
+
+
+            while (true)
+            {
+                var exprContext = new Context(boolExprCommands, context.Variables);
+                if (IfBool(exprContext))
+                {
+                    var forContext = new Context(commands, context.Variables);
+                    BracketStatement(forContext);
+                }
+                else
+                    break;
+            }
         }
 
         private void For(Context context)
