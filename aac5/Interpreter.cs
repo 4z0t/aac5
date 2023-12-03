@@ -13,7 +13,7 @@ namespace Interpreter
             var tokinizer = new Tokenizer();
             var tokens = tokinizer.Tokenize(code);
             var onlyTokens = tokens.Where(x => x.Type != TokenType.Space);
-            var context = new Context(onlyTokens);
+            var context = new Context(onlyTokens, Variables);
             Interpret(context);
         }
 
@@ -166,7 +166,7 @@ namespace Interpreter
                     bracketCount--;
             }
             if (bracketCount > 0)
-                throw new Exception("Not enough }.");
+                throw new Exception("Expected '}'");
 
             while (context.Variables[charecter.TokenString] < right)
             {
@@ -276,15 +276,17 @@ namespace Interpreter
                 throw ExpressionsHellper.ThrowUnexpectedToken(token);
         }
 
+        Dictionary<string, int> Variables { get; init; } = new();
+
         public class Context
         {
             public Dictionary<string, int> Variables;
             public Stack<Token> Tokens;
 
-            public Context(IEnumerable<Token> tokens)
+            public Context(IEnumerable<Token> tokens, Dictionary<string, int>? vars = null)
             {
                 Tokens = new Stack<Token>(tokens.Reverse());
-                Variables = new Dictionary<string, int>();
+                Variables = vars ?? new();
             }
         }
     }

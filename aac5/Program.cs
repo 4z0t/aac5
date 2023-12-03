@@ -9,9 +9,22 @@ namespace Interpreter
     {
         static void Main(string[] args)
         {
-            var code = File.ReadAllText("../../../Resources/Code.txt");
             Interpreter interpreter = new Interpreter();
-            interpreter.Interpret(code);
+            if (args.Length == 0)
+            {
+                while (true)
+                {
+                    var code = Console.ReadLine();
+                    if (code == "exit" ) break;
+                    interpreter.Interpret(code);
+                }
+            }
+            else
+            {
+
+                var code = File.ReadAllText(args[0]);//"../../../Resources/Code.txt"
+                interpreter.Interpret(code);
+            }
         }
     }
 }
