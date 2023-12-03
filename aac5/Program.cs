@@ -15,7 +15,7 @@ namespace Interpreter
                 while (true)
                 {
                     var code = Console.ReadLine();
-                    if (code == "exit" ) break;
+                    if (code == "exit") break;
                     interpreter.Interpret(code);
                 }
             }

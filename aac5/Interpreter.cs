@@ -216,6 +216,16 @@ namespace Interpreter
             }
         }
 
+        private static void PrintStack(Stack<Token> stack)
+        {
+            var stackCopy = new Stack<Token>(stack.Reverse());
+            while(stackCopy.Count != 0)
+            {
+                Console.WriteLine(stackCopy.Pop());
+            }
+            Console.WriteLine();
+        }//for i = 1 to 10 { if i ==1 { print i}}
+
         private void BracketStatement(Context context)
         {
             var queue = context.Tokens;
@@ -224,7 +234,9 @@ namespace Interpreter
             if (token.TokenString != "{")
                 throw ExpressionsHellper.ThrowUnexpectedToken(token);
             while (queue.Count > 0 && queue.Peek().TokenString != "}")
+            {
                 Statement(context);
+            }
             ExpressionsHellper.CheckStack(context);
             token = queue.Pop();
             if (token.TokenString != "}")
@@ -236,9 +248,10 @@ namespace Interpreter
             var queue = context.Tokens;
             if (queue.Count == 0)
                 return;
-            var token = queue.Pop();
+            var token = queue.Peek();
             if (token.TokenString == "else")
             {
+                queue.Pop();
                 BracketStatement(context);
             }
         }
