@@ -58,6 +58,14 @@ namespace Interpreter
             {
                 Scan(context);
             }
+            else if (token == "continue")
+            {
+                Continue(context);
+            }
+            else if (token == "break")
+            {
+                Break(context);
+            }
             else if (type == TokenType.Character)
             {
                 context.Tokens.Push(tokenFull);
@@ -65,6 +73,18 @@ namespace Interpreter
             }
             else
                 throw ExpressionsHellper.ThrowUnexpectedToken(tokenFull);
+        }
+
+        class BreakException : Exception { };
+        class ContinueException : Exception { };
+
+        private void Break(Context context)
+        {
+            throw new BreakException();
+        }
+        private void Continue(Context context)
+        {
+            throw new ContinueException();
         }
 
         private void Assign(Context context)
@@ -166,8 +186,20 @@ namespace Interpreter
                 var exprContext = new Context(boolExprCommands, context.Variables);
                 if (IfBool(exprContext))
                 {
-                    var forContext = new Context(commands, context.Variables);
-                    BracketStatement(forContext);
+                    try
+                    {
+                        var forContext = new Context(commands, context.Variables);
+                        BracketStatement(forContext);
+                    }
+                    catch (ContinueException)
+                    {
+                        continue;
+                    }
+                    catch (BreakException)
+                    {
+                        break;
+                    }
+                    catch { throw; }
                 }
                 else
                     break;
@@ -219,9 +251,21 @@ namespace Interpreter
 
             while (context.Variables[charecter.TokenString] < right)
             {
-                var forContext = new Context(commands, context.Variables);
-                BracketStatement(forContext);
-                context.Variables[charecter.TokenString]++;
+                try
+                {
+                    var forContext = new Context(commands, context.Variables);
+                    BracketStatement(forContext);
+                    context.Variables[charecter.TokenString]++;
+                }
+                catch (ContinueException)
+                {
+                    context.Variables[charecter.TokenString]++;
+                    continue;
+                }
+                catch (BreakException)
+                {
+                    break;
+                }
             }
         }
 
