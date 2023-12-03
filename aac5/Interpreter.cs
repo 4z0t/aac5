@@ -324,7 +324,7 @@ namespace Interpreter
             ExpressionsHellper.CheckStack(context);
             var token = queue.Pop();
             if (token.TokenString != "{")
-                throw ExpressionsHellper.ThrowUnexpectedToken(token);
+                ExpressionsHellper.ThrowUnexpectedToken(token);
             while (queue.Count > 0 && queue.Peek().TokenString != "}")
             {
                 Statement(context);
@@ -332,7 +332,7 @@ namespace Interpreter
             ExpressionsHellper.CheckStack(context);
             token = queue.Pop();
             if (token.TokenString != "}")
-                throw ExpressionsHellper.ThrowUnexpectedToken(token);
+                ExpressionsHellper.ThrowUnexpectedToken(token);
         }
 
         private void Else(Context context)
@@ -372,7 +372,8 @@ namespace Interpreter
                 return left != rigth;
             }
             else
-                throw ExpressionsHellper.ThrowUnexpectedToken(token);
+                ExpressionsHellper.ThrowUnexpectedToken(token);
+            return false;
         }
 
         Dictionary<string, int> Variables { get; init; } = new();

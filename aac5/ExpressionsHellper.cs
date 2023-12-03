@@ -13,7 +13,7 @@ namespace Interpreter
 
         public static Exception ThrowUnexpectedToken(Token token)
         {
-            return new Exception($"Unexpected symbol {token.TokenString}.");
+            throw new Exception($"Unexpected symbol {token.TokenString}.");
         }
     }
 }
