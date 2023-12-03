@@ -183,7 +183,7 @@ namespace Interpreter
             if (IfBool(context))
             {
                 BracketStatement(context);
-                if (queue.Peek().TokenString == "else")
+                if (queue.Count != 0 && queue.Peek().TokenString == "else")
                 {
                     queue.Pop();
                     var token = queue.Pop();
