@@ -316,7 +316,7 @@ namespace Interpreter
                 Console.WriteLine(stackCopy.Pop());
             }
             Console.WriteLine();
-        }//for i = 1 to 10 { if i ==1 { print i}}
+        }
 
         private void BracketStatement(Context context)
         {
