@@ -171,8 +171,7 @@ namespace Interpreter
 
             while (context.Variables[charecter.TokenString] < right)
             {
-                var forContext = new Context(commands);
-                forContext.Variables = context.Variables;
+                var forContext = new Context(commands, context.Variables);
                 BracketStatement(forContext);
                 context.Variables[charecter.TokenString]++;
             }
