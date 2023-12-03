@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -177,6 +178,26 @@ namespace Interpreter
             }
         }
 
+
+        private void SkipStatement(Context context)
+        {
+            var queue = context.Tokens;
+            var token = queue.Pop();
+            int bracketCount = 1;
+            if (token.TokenString != "{")
+                throw ExpressionsHellper.ThrowUnexpectedToken(token);
+            while (queue.Count > 0 && bracketCount != 0)
+            {
+                token = queue.Pop();
+                if (token.TokenString == "{")
+                    bracketCount++;
+                if (token.TokenString == "}")
+                    bracketCount--;
+            }
+            if (bracketCount > 0)
+                throw new Exception("Expected '}'.");
+        }
+
         private void If(Context context)
         {
             var queue = context.Tokens;
@@ -186,38 +207,12 @@ namespace Interpreter
                 if (queue.Count != 0 && queue.Peek().TokenString == "else")
                 {
                     queue.Pop();
-                    var token = queue.Pop();
-                    int bracketCount = 1;
-                    if (token.TokenString != "{")
-                        throw ExpressionsHellper.ThrowUnexpectedToken(token);
-                    while (queue.Count > 0 && bracketCount != 0)
-                    {
-                        token = queue.Pop();
-                        if (token.TokenString == "{")
-                            bracketCount++;
-                        if (token.TokenString == "}")
-                            bracketCount--;
-                    }
-                    if (bracketCount > 0)
-                        throw new Exception("Not enough }.");
+                    SkipStatement(context);
                 }
             }
             else
             {
-                int bracketCount = 1;
-                var token = queue.Pop();
-                if (token.TokenString != "{")
-                    throw ExpressionsHellper.ThrowUnexpectedToken(token);
-                while (queue.Count > 0 && bracketCount != 0)
-                {
-                    token = queue.Pop();
-                    if (token.TokenString == "{")
-                        bracketCount++;
-                    if (token.TokenString == "}")
-                        bracketCount--;
-                }
-                if (bracketCount > 0)
-                    throw new Exception("Not enough }.");
+                SkipStatement(context);
                 Else(context);
             }
         }
