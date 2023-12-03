@@ -34,7 +34,7 @@ namespace Interpreter
                 if (closeBracket.TokenString == ")")
                     return result;
             }
-            throw new Exception($"Unexpected simbol {_string}.");
+            throw new Exception($"Unexpected symbol {_string}.");
         }
     }
 }

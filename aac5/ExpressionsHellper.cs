@@ -8,12 +8,12 @@ namespace Interpreter
         public static void CheckStack(Interpreter.Context context)
         {
             if (context.Tokens.Count <= 0)
-                throw new Exception("Unexpected simbol.");
+                throw new Exception("Unexpected symbol.");
         }
 
         public static Exception ThrowUnexpectedToken(Token token)
         {
-            return new Exception($"Unexpected simbol {token.TokenString}.");
+            return new Exception($"Unexpected symbol {token.TokenString}.");
         }
     }
 }

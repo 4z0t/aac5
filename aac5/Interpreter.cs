@@ -78,13 +78,13 @@ namespace Interpreter
             ExpressionsHellper.CheckStack(context);
             var token = context.Tokens.Pop();
             if (token.Type != TokenType.Character)
-                throw new Exception($"Invalid simbol for \"scan\" {token.TokenString}.");
+                throw new Exception($"Invalid symbol for \"scan\" {token.TokenString}.");
             var value = Int32.Parse(Console.ReadLine());
             context.Variables[token.TokenString] = value;
             ExpressionsHellper.CheckStack(context);
             token = context.Tokens.Pop();
             if (token.TokenString != ";")
-                throw new Exception($"Invalid simbol for \"scan\" {token.TokenString}.");
+                throw new Exception($"Invalid symbol for \"scan\" {token.TokenString}.");
         }
 
         private void Print(Context context)
