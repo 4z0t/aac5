@@ -18,12 +18,24 @@ namespace Interpreter
             Interpret(context);
         }
 
+
+        class BreakException : Exception { };
+        class ContinueException : Exception { };
+
         private void Interpret(Context context)
         {
             try
             {
                 while (context.Tokens.Count > 0)
                     Statement(context);
+            }
+            catch(BreakException)
+            {
+                Console.WriteLine("Unexpected break statement");
+            }
+            catch(ContinueException)
+            {
+                Console.WriteLine("Unexpected continue statement");
             }
             catch (Exception ex)
             {
@@ -40,15 +52,15 @@ namespace Interpreter
             var token = tokenFull.TokenString;
             if (token == "if")
             {
-                If(context);
+                EvalIfStatement(context);
             }
             else if (token == "for")
             {
-                For(context);
+                ForStatement(context);
             }
             else if (token == "while")
             {
-                While(context);
+                WhileStatement(context);
             }
             else if (token == "print")
             {
@@ -75,8 +87,6 @@ namespace Interpreter
                 throw ExpressionsHellper.ThrowUnexpectedToken(tokenFull);
         }
 
-        class BreakException : Exception { };
-        class ContinueException : Exception { };
 
         private void Break(Context context)
         {
@@ -150,7 +160,7 @@ namespace Interpreter
                 throw new Exception("Invalid <print_end>.");
         }
 
-        private void While(Context context)
+        private void WhileStatement(Context context)
         {
             ExpressionsHellper.CheckStack(context);
             var stack = context.Tokens;
@@ -184,12 +194,12 @@ namespace Interpreter
             while (true)
             {
                 var exprContext = new Context(boolExprCommands, context.Variables);
-                if (IfBool(exprContext))
+                if (EvalBoolExpression(exprContext))
                 {
                     try
                     {
                         var forContext = new Context(commands, context.Variables);
-                        BracketStatement(forContext);
+                        EvalStatement(forContext);
                     }
                     catch (ContinueException)
                     {
@@ -206,7 +216,7 @@ namespace Interpreter
             }
         }
 
-        private void For(Context context)
+        private void ForStatement(Context context)
         {
             ExpressionsHellper.CheckStack(context);
             var stack = context.Tokens;
@@ -224,10 +234,10 @@ namespace Interpreter
                 throw ExpressionsHellper.ThrowUnexpectedToken(equal);
             var right = Expression.Parse(context);
             context.Variables[charecter.TokenString] = left;
-            ForLoop(context, charecter, right);
+            EvalForLoop(context, charecter, right);
         }
 
-        private void ForLoop(Context context, Token charecter, int right)
+        private void EvalForLoop(Context context, Token charecter, int right)
         {
             var queue = context.Tokens;
             var commands = new List<Token>();
@@ -236,7 +246,6 @@ namespace Interpreter
             if (token.TokenString != "{")
                 throw ExpressionsHellper.ThrowUnexpectedToken(token);
             commands.Add(token);
-            //take commands for For;
             while (queue.Count > 0 && bracketCount != 0)
             {
                 token = queue.Pop();
@@ -254,7 +263,7 @@ namespace Interpreter
                 try
                 {
                     var forContext = new Context(commands, context.Variables);
-                    BracketStatement(forContext);
+                    EvalStatement(forContext);
                     context.Variables[charecter.TokenString]++;
                 }
                 catch (ContinueException)
@@ -289,12 +298,12 @@ namespace Interpreter
                 throw new Exception("Expected '}'.");
         }
 
-        private void If(Context context)
+        private void EvalIfStatement(Context context)
         {
             var queue = context.Tokens;
-            if (IfBool(context))
+            if (EvalBoolExpression(context))
             {
-                BracketStatement(context);
+                EvalStatement(context);
                 if (queue.Count != 0 && queue.Peek().TokenString == "else")
                 {
                     queue.Pop();
@@ -304,7 +313,7 @@ namespace Interpreter
             else
             {
                 SkipStatement(context);
-                Else(context);
+                ElseBlock(context);
             }
         }
 
@@ -318,7 +327,7 @@ namespace Interpreter
             Console.WriteLine();
         }
 
-        private void BracketStatement(Context context)
+        private void EvalStatement(Context context)
         {
             var queue = context.Tokens;
             ExpressionsHellper.CheckStack(context);
@@ -335,7 +344,7 @@ namespace Interpreter
                 ExpressionsHellper.ThrowUnexpectedToken(token);
         }
 
-        private void Else(Context context)
+        private void ElseBlock(Context context)
         {
             var queue = context.Tokens;
             if (queue.Count == 0)
@@ -344,11 +353,11 @@ namespace Interpreter
             if (token.TokenString == "else")
             {
                 queue.Pop();
-                BracketStatement(context);
+                EvalStatement(context);
             }
         }
 
-        private bool IfBool(Context context)
+        private bool EvalBoolExpression(Context context)
         {
             ExpressionsHellper.CheckStack(context);
             var left = Expression.Parse(context);

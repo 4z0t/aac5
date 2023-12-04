@@ -13,15 +13,15 @@ namespace Interpreter
             if (_stack.Count <= 0)
                 return factorResult;
 
-            var @operator = _stack.Peek();
-            if (@operator.Type == TokenType.Operator)
+            var op = _stack.Peek();
+            if (op.Type == TokenType.Operator)
             {
-                if (@operator.TokenString == "*")
+                if (op.TokenString == "*")
                 {
                     _stack.Pop();
                     return factorResult * Parse(_context);
                 }
-                else if (@operator.TokenString == "/")
+                else if (op.TokenString == "/")
                 {
                     _stack.Pop();
                     return factorResult / Parse(_context);
