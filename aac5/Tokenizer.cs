@@ -10,19 +10,14 @@ namespace Interpreter
         public IEnumerable<Token> Tokenize(string code)
         {
             var allRules = Rules.GetAllRules();
-            var regexPattern = String.Join("|", allRules.Select(x =>
-            {
-                if ("()*+".Contains(x))
-                    return $"({@"\" + x})";
-                return $"({x})";
-            }));
+            var regexPattern = string.Join("|", allRules.Select(x => "()*+".Contains(x) ? $"(\\{x})" : $"({x})"));
             var regex = Regex.Matches(code, regexPattern, RegexOptions.Singleline);
 
             foreach (Match item in regex)
             {
-                var token = item.Value;
+                string token = item.Value;
 
-                if (String.IsNullOrWhiteSpace(token)) { yield return new Token(token, TokenType.Space); continue; }
+                if (string.IsNullOrWhiteSpace(token)) { yield return new Token(token, TokenType.Space); continue; }
                 if (Rules.Functions.Contains(token)) { yield return new Token(token, TokenType.Function); continue; }
                 if (Rules.Sintaxis.Contains(token)) { yield return new Token(token, TokenType.Sintaxis); continue; }
                 if (Regex.Match(token, Rules.QuoteString).Success) { yield return new Token(token, TokenType.QuoteString); continue; }
@@ -49,7 +44,7 @@ namespace Interpreter
 
             public override string ToString()
             {
-                return $"{TokenString}|{Type.ToString()}";
+                return $"{TokenString}|{Type}";
             }
         }
 
@@ -72,7 +67,7 @@ namespace Interpreter
 
             public static IEnumerable<string> GetAllRules()
             {
-                var list = new List<string>();
+                List<string> list = new();
                 list.AddRange(Functions);
                 list.AddRange(Sintaxis);
                 list.Add(QuoteString);
