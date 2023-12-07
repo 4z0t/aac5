@@ -17,8 +17,7 @@ namespace Interpreter
             var tokinizer = new Tokenizer();
             var tokens = tokinizer.Tokenize(code);
             var onlyTokens = tokens.Where(x => x.Type != TokenType.Space);
-            var context = new Context(onlyTokens, Variables);
-            Interpret(context);
+            Interpret(new Context(onlyTokens, Variables));
         }
 
         private static readonly Dictionary<string, IStatement> statements = new()

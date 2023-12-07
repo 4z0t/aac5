@@ -31,23 +31,6 @@ namespace Interpreter
             }
         }
 
-        public class Token
-        {
-            public Token(string token, TokenType identity)
-            {
-                TokenString = token;
-                Type = identity;
-            }
-
-            public string TokenString { get; }
-            public TokenType Type { get; }
-
-            public override string ToString()
-            {
-                return $"{TokenString}|{Type}";
-            }
-        }
-
         public static class Rules
         {
             static Rules()
@@ -109,5 +92,23 @@ namespace Interpreter
             Function,
             Sintaxis
         }
+    }
+}
+
+
+public class Token
+{
+    public Token(string token, TokenType identity)
+    {
+        TokenString = token;
+        Type = identity;
+    }
+
+    public string TokenString { get; }
+    public TokenType Type { get; }
+
+    public override string ToString()
+    {
+        return $"{TokenString}|{Type}";
     }
 }

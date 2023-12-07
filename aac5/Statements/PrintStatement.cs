@@ -45,7 +45,7 @@ namespace Interpreter
                     return expression;
             }
             else
-                throw new Exception("Invalid <print_end>.");
+                throw new Exception("Invalid print statement");
         }
 
     }

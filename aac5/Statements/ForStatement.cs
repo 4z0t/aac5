@@ -9,6 +9,13 @@ using static Interpreter.Tokenizer;
 
 namespace Interpreter
 {
+    enum ForLoopType
+    {
+        Increase,
+        Decrease,
+    };
+
+
     class ForStatement : IStatement
     {
         public void Process(Interpreter interpreter, Context context)
@@ -28,11 +35,19 @@ namespace Interpreter
             if (to.TokenString != "to")
                 throw ExpressionsHellper.ThrowUnexpectedToken(equal);
             var right = Expression.Parse(context);
-            context.Variables[charecter.TokenString] = left;
-            EvalForLoop(interpreter, context, charecter, right);
+            if (right < left)
+            {
+                context.Variables[charecter.TokenString] = left;
+                EvalForLoop(interpreter, context, charecter, right, ForLoopType.Decrease);
+            }
+            else
+            {
+                context.Variables[charecter.TokenString] = left;
+                EvalForLoop(interpreter, context, charecter, right, ForLoopType.Increase);
+            }
         }
 
-        private void EvalForLoop(Interpreter interpreter, Context context, Token charecter, int right)
+        private void EvalForLoop(Interpreter interpreter, Context context, Token charecter, int goal, ForLoopType type)
         {
             var queue = context.Tokens;
             var commands = new List<Token>();
@@ -53,7 +68,18 @@ namespace Interpreter
             if (bracketCount > 0)
                 throw new Exception("Expected '}'");
 
-            while (context.Variables[charecter.TokenString] < right)
+            if (type == ForLoopType.Increase)
+            {
+                IncreaseForLoop(interpreter, context, commands, charecter, goal);
+            }
+            else
+            {
+                DecreaseForLoop(interpreter, context, commands, charecter, goal);
+            }
+        }
+        private void IncreaseForLoop(Interpreter interpreter, Context context, List<Token> commands, Token charecter, int goal)
+        {
+            while (context.Variables[charecter.TokenString] < goal)
             {
                 try
                 {
@@ -71,6 +97,29 @@ namespace Interpreter
                 }
             }
         }
+
+        private void DecreaseForLoop(Interpreter interpreter, Context context, List<Token> commands, Token charecter, int goal)
+        {
+            while (context.Variables[charecter.TokenString] > goal)
+            {
+                try
+                {
+                    interpreter.EvalStatement(new Context(commands, context.Variables));
+                    context.Variables[charecter.TokenString]--;
+                }
+                catch (ContinueException)
+                {
+                    context.Variables[charecter.TokenString]--;
+                    continue;
+                }
+                catch (BreakException)
+                {
+                    break;
+                }
+            }
+        }
+
+
 
     }
 }
